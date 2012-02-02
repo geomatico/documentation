@@ -11,10 +11,27 @@ Instalar todos los paquetes de la categoría "Web, XML, Java EE Development
 and OSGi Enterprise Development" excepto "PHP Development" y "Rich Ajax 
 Platform (RAP) Tooling”.
 
+.. highlights::
+
+   Puede que haga falta  añadir manualmente el repositorio.
+   Para Eclipse 3.7 (Indigo):
+
+   Menú Help > Install new Software > Add...
+
+   * Indigo - http://download.eclipse.org/releases/indigo
+   * Indigo updates - http://download.eclipse.org/eclipse/updates/3.7
+
+
 Maven
 ^^^^^
 Si no se van a gastar librerías externas que no pueden ser obtenidas mediante
 Maven, se puede gastar cualquier versión de Maven.
+
+.. highlights::
+
+   Para instalar Maven3 manualmente:
+   http://maven.apache.org/download.html#Installation
+
 
 Sin embargo, si lo anterior es necesario, Maven 3.x permite la inclusión de 
 jars externos como dependencias en el *pom.xml* de la siguiente manera::

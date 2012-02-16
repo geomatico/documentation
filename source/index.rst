@@ -12,6 +12,7 @@ Contents:
    :maxdepth: 2
    
    maven_wtp
+   maven_reactor
 
 Indices and tables
 ==================

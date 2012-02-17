@@ -13,6 +13,7 @@ Contents:
    
    maven_wtp
    maven_reactor
+   gvsig_bin_plugin
 
 Indices and tables
 ==================

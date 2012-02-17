@@ -2,6 +2,12 @@
 Creación de un plugin y ejecución contra distribución binaria existente
 ===============================================================================
 
+A continuación se explica cómo crear un plugin de gvSIG y compilarlo contra una
+distribución binaria existente, sin necesidad de descargar las fuentes.
+
+Existe un fichero gv-plugin-base.tgz con un proyecto eclipse que puede servir de
+base para el desarrollo de nuevos plugins gvSIG.
+
 Estructura del proyecto
 ------------------------
 

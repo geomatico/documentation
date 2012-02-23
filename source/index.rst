@@ -14,6 +14,7 @@ Contents:
    maven_wtp
    maven_reactor
    gvsig_bin_plugin
+   apache-continuum
 
 Indices and tables
 ==================

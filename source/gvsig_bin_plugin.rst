@@ -61,6 +61,10 @@ Inicialmente se requiere el jar del plugin principal y andami::
 		<classpathentry kind="output" path="bin"/>
 	</classpath>
 
+Un comando linux útil para saber qué jar contiene una clase::
+
+	for file in `find . -name \*.jar`; do echo $file; jar -tvf $file | grep IProjection; done
+
 Dependencias de librerías normales
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 

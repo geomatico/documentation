@@ -199,7 +199,13 @@ Recordar que cuando se inicie la máquina nuestro servidor |AC| se iniciará con
 Crearemos la variable de entorno para |AC| para todos los usuarios editando el archivo ``/etc/environment``::
 
 	$ sudo echo 'export CONTINUUM_HOME=/usr/local/apache-continuum' > /etc/environment
-	
+
+Ejecución de |AC| en linea de comandos
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Si se desea arrancar y parar |AC| de forma manual, es posible hacerlo ejecutando el script 
+llamado *continuum* en el directorio *bin* de nuestra instalación.
+
 Configuración de |AC|
 =====================
 Creación del usuario admin
@@ -232,7 +238,7 @@ Será necesario incluir Builders en nuestra instalación. |AC| ya tiene incluido
 +------------------+-----------------------+---------------------+----------------------+-----------------------------+
 |                  |  *Installation type*  |   *Name*            |         *Type*       |    *Value/Path*             |
 +------------------+-----------------------+---------------------+----------------------+-----------------------------+
-|    Maven2        |   Tool                |    Maven2           |      Maven2          | /usr/share/mvaen2           |
+|    Maven2        |   Tool                |    Maven2           |      Maven2          | /usr/share/maven2           |
 +------------------+-----------------------+---------------------+----------------------+-----------------------------+
 |    JDK           |   Tool                |    Java6            |      JDK             | /usr/lib/jvm/java-6-openjdk |
 +------------------+-----------------------+---------------------+----------------------+-----------------------------+
@@ -296,7 +302,10 @@ Creación de proyectos en |AC|
 =============================
 Añadiendo un proyecto |MVN|
 ----------------------------
-Lo primero que debemos entender es el flujo de trabajo de |AC|. Para crear un proyecto |MVN| debemos tener acceso a un archivo pom.xml que defina nuestro proyecto. Podremos indicarle que lo descargue desde una URL o podemos hacer que lo obtenga de un directorio local. En este último caso, debemos activar esta opción, ya que por razones de seguridad viene desactivada por defecto en |AC|.
+Lo primero que debemos entender es el flujo de trabajo de |AC|. Para crear un proyecto |MVN| debemos tener acceso a un archivo pom.xml que defina nuestro proyecto. Podremos indicarle que lo descargue desde una URL o podemos hacer que lo obtenga de un directorio local. 
+
+Los proyectos maven2 multimódulo no pueden ser añadidos como fichero por lo que la opción más sencilla es especificar una URL con protocolo *file://*. En este último caso, debemos activar esta opción, ya que por razones de seguridad viene desactivada por defecto en |AC|. Esto se puede hacer editando el fichero $CONTINUUM_HOME/apps/continuum/WEB-INF/classes/META-INF/plexus/application.xml
+
 El pom.xml que le vamos a indicar, desde el que |AC| construirá nuestro proyecto, debe incorporar las direcciones a nuestro repositorio de desarrollo, en este caso |GH|. Para ello debemos comprobar que aparecen las etiquetas ``scm`` en nuestro pom.xml::
 
 	<scm></scm>

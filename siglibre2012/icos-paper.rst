@@ -45,7 +45,7 @@ ICOS Carbon Data Portal: Repositorio integrado de mediciones sobre gases de efec
 
    La infraestructura europea `ICOS (Integrated Carbon Observation System) <http://www.icos-infrastructure.eu>`_, tiene como misión proveer de mediciones de gases de efecto invernadero a largo plazo, lo que ha de permitir estudiar el estado actual y comportamiento futuro del ciclo global del carbono.
 
-   En este contexto, |geomatico|_ ha desarrollado un portal de búsqueda y descarga de datos que integre las mediciones realizadas en los ámbitos terrestre, marítimo y atmosférico, disciplinas que hasta ahora habían gestionado los datos de forma separada.
+   En este contexto, |geomatico|_ ha desarrollado un portal de búsqueda y descarga de datos que integra las mediciones realizadas en los ámbitos terrestre, marítimo y atmosférico, disciplinas que hasta ahora habían gestionado los datos de forma separada.
 
    El portal permite hacer búsquedas por múltiples ámbitos geográficos, por rango temporal, por texto libre o por un subconjunto de magnitudes, realizar vistas previas de los datos, y añadir los conjuntos de datos que se crean interesantes a un “*carrito*” de descargas.
 
@@ -78,7 +78,7 @@ Para ello se establecerá una red de observación sistemática a largo plazo, di
 Portal de datos ICOS-Spain
 --------------------------
 
-En el contexto de ICOS, |geomatico| ha desarrollado un portal de datos que sirva como punto de acceso unificado a los datos proporcionados por la parte española de su infraestructura. Dicho portal es el que se describe en este artículo.
+En el contexto de ICOS, |geomatico| ha desarrollado un portal de datos que sirve como punto de acceso unificado a los datos proporcionados por la parte española de su infraestructura. Dicho portal es el que se describe en este artículo.
 
 DataPortal permite:
 
@@ -86,7 +86,7 @@ DataPortal permite:
 
 * La extracción de metadatos e indexación en un catálogo ISO 19119 mediante el uso de GeoNetwork.
 
-* El acceso a dichos datos mdiante una aplicación web. La aplicación permite:
+* El acceso a dichos datos mediante una aplicación web. La aplicación permite:
 
   * Búsqueda en el repositorio de datos, combinando los siguientes criterios:
 
@@ -142,14 +142,14 @@ Se ha optado por el uso de NetCDF como formato común de los datos por tratarse 
 Metadatos
 ---------
 
-El *Data Portal* puede realizar búsquedas por ámbito geográfico, período temporal, conjunto de variables, o por texto libre, dentro de un conjunto de ficheros netCDF. Para que los datos originales sean recuperables mediante estos criterios, es necesario que éstos estén convenientemente descritos y puedan extraerse las variables que permitirán su búsqueda al final del fluji.
+El *Data Portal* puede realizar búsquedas por ámbito geográfico, período temporal, conjunto de variables, o por texto libre, dentro de un conjunto de ficheros netCDF. Para que los datos originales sean recuperables mediante estos criterios, es necesario que éstos estén convenientemente descritos y puedan extraerse las variables que permitirán su búsqueda al final del flujo.
 
 A tal efecto, se han seguido un subconjunto de las convenciones ya existentes para datos en el ámbito de la observación climática y predicción meteorológica [#]_, y para el descubrimiento de los datos [#]_.
 
 .. [#] Climate & Forecast 1.5: http://cf-pcmdi.llnl.gov/documents/cf-conventions/1.5/cf-conventions.html
 .. [#] NetCDF Attribute Convention for Dataset Discovery: http://www.unidata.ucar.edu/software/netcdf-java/formats/DataDiscoveryAttConvention.html
 
-En concreto, los datos NetCDF incluidos en la aplicación netCDF deberán contener los siguientes atributos globales:
+En concreto, los datos NetCDF incluidos en la aplicación deberán contener los siguientes atributos globales:
 
 .. table:: Propuesta de atributos globales NetCDF mínimos para Data Portal
 
@@ -190,9 +190,9 @@ En concreto, los datos NetCDF incluidos en la aplicación netCDF deberán conten
 .. [#] CF Standard names: http://cf-pcmdi.llnl.gov/documents/cf-standard-names/standard-name-table/18/cf-standard-name-table.html
 
 
-A lo largo de la aplicación, estos **atributos netCDF** se transformarán en una **fichas ISO** en un proceso de harvesting. El servicio de **búsqueda** permitirá filtrar por alguno de estos conceptos vía **parámetros de búsqueda**, que se convertirán en un **request CSW**, y que dará lugar a unos **resultados de búsqueda**. Estos resultados, además, serán **ordenables** por alguno de los parámetros.
+A lo largo de la aplicación, estos **atributos netCDF** se transformarán en una **ficha ISO** en un proceso de harvesting. El servicio de **búsqueda** permitirá filtrar por alguno de estos conceptos vía **parámetros de búsqueda**, que se convertirán en un **request CSW**, y que dará lugar a unos **resultados de búsqueda**. Estos resultados, además, serán **ordenables** por alguno de los parámetros.
 
-Así pues, cabe especificar qué forma tomará cada metadato las diferentes etapas de la aplicación, según el estándar o convención seguido en cada una de ellas.
+Así pues, cabe especificar qué forma tomará cada metadato en las diferentes etapas de la aplicación, según el estándar o convención seguido en cada una de ellas.
 
 .. list-table:: Equivalencia entre los nombres de los metadatos cada componente de la aplicación
    :header-rows: 1
@@ -246,7 +246,7 @@ Así pues, cabe especificar qué forma tomará cada metadato las diferentes etap
 Estructura de los datos
 -----------------------
 
-Climate and Forecast (en adelante, CF) es una convención que define ciertas normas y recomendaciones para los contenidos de los ficheros NetCDF. En la medida en que CF cubra nuestras necesidades, de utilizará dicha convención en su versión 1.5.
+Climate and Forecast (en adelante, CF) es una convención que define ciertas normas y recomendaciones para los contenidos de los ficheros NetCDF. En la medida en que CF cubra nuestras necesidades, se utilizará dicha convención en su versión 1.5.
 
 Atributos de cada variable
 ..........................

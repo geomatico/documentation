@@ -13,6 +13,7 @@ Contents:
    
    maven_wtp
    maven_reactor
+   gvsig_1_11_maven
    gvsig_bin_plugin
    apache-continuum
 

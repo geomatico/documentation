@@ -19,7 +19,7 @@ Geoserver, más allá de un servidor WMS
 
 .. epigraph:: **RESUMEN**
 
-   |GS|_ es un servidor de mapas open source escrito en Java que permite a los usuarios compartir y editar información geoespacial usando estándares abiertos. En efecto, implementa varios estándares definidos por el Open Geospatial Consortium (OGC), como por ejemplo el archiconocido Web Map Service(WMS).
+   |GS|_ es un servidor de mapas open source escrito en Java que permite a los usuarios compartir y editar información geoespacial usando estándares abiertos. En efecto, implementa varios estándares definidos por el Open Geospatial Consortium (OGC), como por ejemplo el archiconocido Web Map Service (WMS).
 
    Sin embargo, GeoServer ofrece muchas más funcionalidades que la implementación del estándar WMS. En el presente artículo se pretende dar un repaso a esas otras funcionalidades menos conocidas pero igualmente útiles y potentes que GeoServer incorpora.
 
@@ -39,26 +39,54 @@ Geoserver, más allá de un servidor WMS
 Introducción
 ============
 
+|GS|_ es conocido como un servidor de mapas que cumple con los estándares OGC WMS, WFS y WCS principalmente. Una de sus características principales es una interfaz web de usuario que permite gestionar todos los contenidos del servidor (conexiones, capas, estilos, metadatos) de forma gráfica, lo cual facilita enormemente la gestión de los contenidos sin necesidad de tener conocimientos informáticos avanzados, puesto que no requiere editar ficheros de configuración o utilizar la línea de comandos.
+
+Pero, además de la evidente interfaz gráfica, |GS| ofrece muchas más funcionalidades, no siempre conocidas, que lo hacen único respecto de otras alternativas, tanto de código libre como privativo. 
+
+|GS| dispone de un muy buen manual en inglés, complementado por miles de *blog posts* y el histórico de sus listas de correo. Toda la información aquí expuesta se puede encontrar en la red. No es pues información inédita, y ni siquiera pretende ser exhaustiva. Simplemente pretendemos mostrar las características distintivas de |GS| que hemos considerado suficientemente relevantes, y esperamos que puedan resultar de utilidad para aquellas personas que se encuentren en la situación de tener que elegir un servidor de mapas para sus proyectos.
+
+A pesar de su título, este documento comienza repasando los servicios estándar principales: WMS, WFS, SLD y WPS. Pero no describirá las funcionalidades básicas ya conocidas (qué es un documento de *capabilities*, o cómo realizar un *getMap*), sino que se centrará en las características que |GS| proporciona más allá de la funcionalidad evidente. Hablaremos también de algunas características relevantes al margen de OGC, como el sistema de seguridad y autenticación, el uso de las interfaces REST, y un repaso a algunas de sus extensiones, que se cuentan por docenas. Finalmente dedicaremos una breve nota a la interoperabilidad.
+
+Este documento se ha elaborado en base a la última versión estable de |GS|, la 2.2.4.
 
 
 WMS Avanzado
 ============
 
+|GS| trata de llevar los estándares tan lejos como es posible. Por ejemplo, para WMS no sólo ofrece imágenes para la web, sino que a través de peticiones WMS podemos obtener visores completos, imágenes perfectamente georreferenciadas, documentos vectoriales o de alta resolución, listos para la imprenta, e incluso animaciones e información tridimensional.
 
 
-Formatos georreferenciados
---------------------------
-
-
-
-Formatos Vectoriales
+Formatos distintivos
 --------------------
 
+Tal como se espera, WMS ofrece los formatos de imagen habituales: GIF, PNG y JPEG y TIFF. Pero veamos algunos formatos más interesantes [#]_:
+
+.. [#] http://docs.geoserver.org/stable/en/user/services/wms/outputformats.html
+
+* **image/png8**: Reduce el número de colores, escogidos de forma óptima, lo cual reduce el peso de la imagen PNG. Las últimas versiones utilizan una nueva técnica [#]_ que ofrece imágenes de calidad óptima, incluso con transparencia. Ideal para generar cachés de capas vectoriales superpuestas.
+
+.. [#] http://geo-solutions.blogspot.com.es/2012/05/developers-corner-geoserver-stunning.html
+
+* **image/geotiff**, incluye cabeceras con el sistema de referencia de coordenadas. Unido al resto de capacidades del servicio (reproyección, simbolización, filtrado), permite usar WMS como un servicio flexible de descarga de geodatos que luego podremos incorporar en nuestros SIG de escritorio. También incluye la variante de 8 bits, **image/geotiff8**.
+
+* **image/svg**, recupera una imagen en formato vectorial, utilizable en software del mundo editorial para su maquetación antes de ir a imprenta.
+
+* **application/pdf**, que también utiliza el formato vectorial si las capas son vectoriales, ideal para generar documentos imprimibles de alta calidad.
+
+* **rss**, utilizable para monitorizar cambios en capas cuyo contenido cambie en el tiempo (eventos).
+
+* **kml** y **kmz**, permite ver el contenido en 3D en Google Earth. Dispone de varios parámetros específicos para controlar la manera como se obtienen los contenidos: incrementalmente utilizando networklinks, de forma rasterizada, de forma vectorial, etc. Combinado con las opciones de extrusión 3D y marcas temporales, permite animaciones y vistas tridimensionales, como veremos más adelante.
+
+* **application/openlayers** genera un visor completo basado en OpenLayers a partir de una simple petición WMS. Es la opción que utiliza |GS| en su **layer preview**. Proporciona interactividad y la posibilidad de generar visores sencillos incrustables en páginas web sin tener que programar.
 
 
-Calidad de Imprenta
--------------------
 
+Parámetros específicos
+----------------------
+
+Además de los parámetros WMS estándar, |GS| proporciona una colección de parámetros específicos que extienden su funcionalidad:
+
+* **angle**, permite orientar la imagen. 
 
 
 Decoraciones
@@ -123,9 +151,6 @@ Es precisamente gracias a los espacios de trabajo por lo que es posible la admin
 APIs REST
 ---------
 
-
-Transformaciones de coordenadas
--------------------------------
 
 
 

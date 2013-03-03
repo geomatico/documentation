@@ -70,8 +70,8 @@ Tal como se espera, WMS ofrece los formatos de imagen habituales: GIF, PNG y JPE
 
 .. figure:: img/png_quantizers.png
    :align: center
-   :width: 500
-   :height: 250
+   :width: 400
+   :height: 200
 
    PNG8 generado en versiones anteriores (izquierda) y mejoras a partir de la versión 2.2 (derecha)
 
@@ -88,38 +88,115 @@ Tal como se espera, WMS ofrece los formatos de imagen habituales: GIF, PNG y JPE
 
 * **application/pdf**, que también se generará en formato vectorial cuando las capas sean vectoriales. Ideal para generar documentos para su impresión en alta calidad.
 
-* **rss**, utilizable para monitorizar cambios en capas cuyo contenido cambie en el tiempo (eventos).
+* **application/rss** y **application/atom**, útil para suscribirse a capas cuyos datos cambien con el tiempo. Las geometrías se codifican en formato GeoRSS, de modo que un visor adecuado (como OpenLayers [#]_) se pueden mostrar los resultados sobre un mapa.
 
-[[TODO montar capa dependiente del tiempo]]
+.. [#] http://openlayers.org/dev/examples/georss.html
 
+* **kml** y **kmz**, permite ver el contenido en 3D en Google Earth. Dispone de varios parámetros específicos para controlar la manera como se obtienen los contenidos: incrementalmente utilizando networklinks, de forma rasterizada (descarga completa o mediante teselado *superoverlay*), de forma vectorial, etc. Combinado con las opciones de extrusión 3D de y marcas temporales, permite animaciones y vistas tridimensionales, como veremos más adelante.
 
-
-* **kml** y **kmz**, permite ver el contenido en 3D en Google Earth. Dispone de varios parámetros específicos para controlar la manera como se obtienen los contenidos: incrementalmente utilizando networklinks, de forma rasterizada, de forma vectorial, etc. Combinado con las opciones de extrusión 3D y marcas temporales, permite animaciones y vistas tridimensionales, como veremos más adelante.
-
-* **application/openlayers** genera un visor completo basado en OpenLayers a partir de una simple petición WMS. Es la opción que utiliza |GS| en su **layer preview**. Proporciona interactividad y la posibilidad de generar visores sencillos incrustables en páginas web sin tener que programar.
-
+* **application/openlayers** genera un visor completo basado en OpenLayers a partir de una simple petición WMS. Es la opción que utiliza |GS| en su **layer preview**. Proporciona un método muy sencillo de incrustar visores en otras páginas web, enviarlos como enlace en un correo electrónico, etc.
 
 
 Parámetros específicos
 ----------------------
 
-Además de los parámetros WMS estándar, |GS| proporciona una colección de parámetros específicos que extienden su funcionalidad:
+Además de los parámetros WMS estándar, |GS| proporciona una colección de parámetros específicos que extienden su funcionalidad. Generalmente estos parámetros se utilizan ligados a algún caso de uso concreto. Es decir, la mayoría de ellos no tiene sentido usarlos en cualquier petición. Veamos algunos de los más interesantes:
 
-* **angle**, permite orientar la imagen. 
+* **angle**, permite orientar la imagen.
+
+.. figure:: img/angle.png
+   :align: center
+   :width: 400
+   :height: 200
+
+   Petición WMS orientada al norte (izquierda) y con un ángulo de 45 grados (derecha).
+
+* **cql_filter**, permite seleccionar qué geometrías quieren mostrarse, mediante unas sintaxis de filtrado (CQL y ECQL) muy compactas pero potentes. Por ejemplo, para obtener los elementos en un radio de 250 metros respecto a un punto dado::
+
+  cql_filter=DWITHIN(the_geom, POINT (431198 4581563), 250, meters)
+
+.. figure:: img/cql_filter.png
+   :align: center
+   :width: 400
+   :height: 200
+
+   Capa original (izquierda) y con el filtro de ejemplo aplicado (derecha).
+
+Dedicaremos un apartado más adelante a ver sus posibilidades, entre las que se incluyen filtrados geométricos y temporales.
+
+* **env**, permite especificar un conjunto de valores que se utilizarán para la simbolización personalizada. Los valores dependerán de cómo se contruya el SLD de visualización. Por ejemplo, podemos escoger qué símbolo se utilizará para un tipo de elemento, su tamaño y color. Veremos ejemplos en el apartado dedicado a simbolización.
 
 
 Decoraciones
 ------------
 
+En una imagen generada mediande WMS, además del propio contenido del mapa, nos puede interesar añadir alguna información contextual como la escala gráfica o numérica, la leyenda, e incluso textos e imágenes personalizadas.
+
+Para ello, |GS| proporciona una manera de definir composiciones o *layouts* [#]_. 
+
+.. [#] http://docs.geoserver.org/latest/en/user/advanced/wmsdecoration.html
+
+Por ejemplo, el siguiente *layout* define tres decoraciones (leyenda, escala gráfica e imagen personalizada):
+
+.. code-block:: xml
+
+  <layout>
+    <decoration type="legend" affinity="top,right" offset="12,12" size="auto"/>
+
+    <decoration type="scaleline" affinity="bottom,right" offset="12,12" size="auto"/>
+
+    <decoration type="image" affinity="bottom,center" offset="12,12" size="360,64">
+      <option name="url" value="layouts/geomatico.png"/>
+    </decoration>
+  </layout>
+
+Los ficheros de *layout* deben guardarse en ``GEOSERVER_DATA_DIR/layouts/nombre.xml`` , e invocarse mediante ``&FORMAT_OPTIONS=layout:nombre`` en la petición WMS.
+
+.. figure:: img/decorations.png
+   :align: center
+   :width: 400
+   :height: 200
+
+   Resultado obtenido de aplicar el *layout* anterior a una petición WMS.
 
 
 Animaciones
 -----------
 
+Aunque se base en el protocolo WMS, este servicio es completamente específico de GeoServer, y se utiliza para generar GIFs animados. utiliza dos parámetros:
+
+* **aparam**: El parámetro que se desea animar. Puede ser cualquiera de los parámetros WMS, pero también cualquiera de los parámetros específicos de |GS|. Esto permite animar la posición, proyección, tamaño, tiempo, estilo, parámetros de estilo (env), ángulo, decoraciones, etc.
+
+* **avalues**: una lista de valores que debe tomar el parámetro para cada uno de los *frames* del gif animado::
+
+  http://localhost:8080/geoserver/wms/animate
+  ?layers=<capa>
+  &aparam=<parameto>
+  &avalues=<valores> 
+
+Como se observa, la dirección de base ya no es ``/geoserver/wms``, sino ``geoserver/wms/animate``.
+
+Se pueden especificar las siguentes opciones de formato (**format_options**):
+
+* **gif_loop_continuosly**: Para repetir la animación indefinidamente, o ejecutarla una sola vez.
+* **gif_frames_delay*: El tiempo (en milisegundos) entre dos frames. Controla la velocidad de la animación.
+
+Estas animaciones sólo se pueden generar en formato GIF.
 
 
-3D
---
+Altura y tiempo
+---------------
+
+Por motivos históricos, en este momento existen dos maneras de gestionar las dimensiones de altura y tiempo en |GS|.
+
+Protocolo WMS
+.............
+
+
+
+Formato KML
+...........
+
 
 
 WFS Avanzado
@@ -135,6 +212,12 @@ Buscador
 Con CQL, paginación y GeoRSS (=> OpenSearch?)
 
 
+Procesos
+========
+
+Scripting...
+
+
 SLD Avanzado
 ============
 
@@ -145,11 +228,6 @@ Estilos externos
 Transformaciones
 ----------------
 
-
-WPS Avanzado
-============
-
-Scripting...
 
 
 Más allá de los estándares OGC
@@ -178,6 +256,9 @@ Extensiones
 
 Breve resumen.
 
+
+Transformaciones de coordenadas
+===============================
 
 
 ¿Interoperabilidad?

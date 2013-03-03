@@ -63,17 +63,36 @@ Tal como se espera, WMS ofrece los formatos de imagen habituales: GIF, PNG y JPE
 
 .. [#] http://docs.geoserver.org/stable/en/user/services/wms/outputformats.html
 
-* **image/png8**: Reduce el número de colores, escogidos de forma óptima, lo cual reduce el peso de la imagen PNG. Las últimas versiones utilizan una nueva técnica [#]_ que ofrece imágenes de calidad óptima, incluso con transparencia. Ideal para generar cachés de capas vectoriales superpuestas.
+* **image/png8**: Reduce el número de colores, escogidos de forma óptima, lo cual reduce el peso de la imagen PNG. Las últimas versiones utilizan una nueva técnica [#]_ que ofrece imágenes de calidad óptima, incluso con transparencia. La solución para generar cachés ligeras de capas vectoriales superpuestas.
 
 .. [#] http://geo-solutions.blogspot.com.es/2012/05/developers-corner-geoserver-stunning.html
 
+
+.. figure:: img/png_quantizers.png
+   :align: center
+   :width: 500
+   :height: 250
+
+   PNG8 generado en versiones anteriores (izquierda) y mejoras a partir de la versión 2.2 (derecha)
+
 * **image/geotiff**, incluye cabeceras con el sistema de referencia de coordenadas. Unido al resto de capacidades del servicio (reproyección, simbolización, filtrado), permite usar WMS como un servicio flexible de descarga de geodatos que luego podremos incorporar en nuestros SIG de escritorio. También incluye la variante de 8 bits, **image/geotiff8**.
 
-* **image/svg**, recupera una imagen en formato vectorial, utilizable en software del mundo editorial para su maquetación antes de ir a imprenta.
+* **image/svg**, recupera una imagen en formato vectorial, editable con software de edición vectorial y calidad óptima para imprenta.
 
-* **application/pdf**, que también utiliza el formato vectorial si las capas son vectoriales, ideal para generar documentos imprimibles de alta calidad.
+.. figure:: img/png_svg.png
+   :align: center
+   :width: 500
+   :height: 250
+
+   Detalle de una petición WMS de 2.2 metros/píxel, en formato PNG (izquierda) y SVG (derecha).
+
+* **application/pdf**, que también se generará en formato vectorial cuando las capas sean vectoriales. Ideal para generar documentos para su impresión en alta calidad.
 
 * **rss**, utilizable para monitorizar cambios en capas cuyo contenido cambie en el tiempo (eventos).
+
+[[TODO montar capa dependiente del tiempo]]
+
+
 
 * **kml** y **kmz**, permite ver el contenido en 3D en Google Earth. Dispone de varios parámetros específicos para controlar la manera como se obtienen los contenidos: incrementalmente utilizando networklinks, de forma rasterizada, de forma vectorial, etc. Combinado con las opciones de extrusión 3D y marcas temporales, permite animaciones y vistas tridimensionales, como veremos más adelante.
 

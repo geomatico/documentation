@@ -167,7 +167,7 @@ Aunque se base en el protocolo WMS, este servicio es completamente específico d
 
 * **aparam**: El parámetro que se desea animar. Puede ser cualquiera de los parámetros WMS, pero también cualquiera de los parámetros específicos de |GS|. Esto permite animar la posición, proyección, tamaño, tiempo, estilo, parámetros de estilo (env), ángulo, decoraciones, etc.
 
-* **avalues**: una lista de valores que debe tomar el parámetro para cada uno de los *frames* del gif animado::
+* **avalues**: una lista de valores que debe tomar el parámetro para cada uno de los *frames* del GIF animado::
 
   http://localhost:8080/geoserver/wms/animate
   ?layers=<capa>
@@ -187,16 +187,103 @@ Estas animaciones sólo se pueden generar en formato GIF.
 Altura y tiempo
 ---------------
 
-Por motivos históricos, en este momento existen dos maneras de gestionar las dimensiones de altura y tiempo en |GS|.
+|GS| es capaz de gestionar también los parámetros de altura y de tiempo. Existen dos maneras distintas de gestionar estas dimensiones, según si utilizamos los formatos de imagen clásicos, o queremos generar un fichero KML para su visualización en Google Earth.
 
-Protocolo WMS
-.............
 
+Datos Vectoriales
+.................
+
+Al publicar una capa vectorial, podemos definir el tiempo o la altura de cada *feature* mediante la pestaña *dimensions* en las propiedades de la capa.
+
+Para que se habilite la dimensión temporal, debe existir al menos un atributo de tipo *date* o *timestamp*. También se puede definir un rango de tiempo, que puede ser fijo (como en la figura) o venir determinado por un segundo atributo temporal que marcará el fin del período.
+
+Al realizar una petición WMS, se utilizará el parámetro ``TIME=`` para visualizar las *features* de un instante dado. O bien, puede definirse un rango utilizando ``/`` como separador. Por ejemplo, ``TIME=1984/2001`` indicaría *muéstrame todas las *features* ente los años 1984 y 2001*.
+
+.. figure:: img/dimensions.png
+   :align: center
+   :width: 400
+   :height: 360
+
+   Pestaña *dimensions* en las propiedades de una capa vectorial.
+
+
+De forma análoga, para poder habilitar la dimensión de altura, debe existir al menos un atributo de tipo numérico. Igualmente, puede definirse un rango de alturas utilizando un segundo atributo numérico. En las peticiones WMS, se utilizará el parámetro ``ELEVATION=`` para indicar un valor de elevación, o un rango utilizando el separador ``/``.
+
+.. figure:: img/elevation.png
+   :align: center
+   :width: 400
+   :height: 200
+
+   Capa de curvas de nivel sin parámetro elevación (izquierda), y con un filtro de elevación (derecha).
+
+
+**Atención**, si en una petición WMS de una capa temporal no se indica ningún parámetro ``TIME``, la respuesta WMS contendrá sólamente las *features* más recientes. Igualmente, en una capa de elevaciones sin parámetro ``ELEVATION``, sólo se mostrarán aquellas de menor elevación. En el documento de *GetCapabilities* del servicio WMS se podrán consultar las listas de valores válidos tanto de altura como de tiempo para cada capa.
+
+
+Datos Raster
+............
+
+Los datos raster con tiempos y alturas son algo más complejos de configurar. Cada instante temporal o de altura vendrá representado por un ficher distinto. Puesto que no existe una tabla con atributos que pueda indicar a |GS| el tiempo o altura correspondiente a cada fichero, habrá que generar un índice a partir de los nombres de los archivos.
+
+Así, indicaremos mediante una expresión regular qué parte del nombre de archivo corresponde a una fecha o una altura. Por ejemplo, a partir de esta colección de ortofotos históricas::
+
+  historic-1990.tif
+  historic-1993.tif
+  historic-1996.tif
+  historic-2000.tif
+  historic-2003.tif
+  historic-2004.tif
+  historic-2006.tif
+  historic-2008.tif
+  historic-2009.tif
+  historic-2010.tif
+
+Crearemos un fichero ``timeregex.properties`` cuyo contenido será::
+
+  regex=[0-9]{4}
+
+Cuya interpretación es: El tiempo viene determinado por cuatro cifras consecutivas en el nombre de archivo. Así, |GS| capturará los valores 1990, 1993, 1996, 2000, 2003, 2004, 2006, 2008, 2009 y 2010 como instantes temporales en el momento de publicar esta capa. En caso de utilizar datos con periodicidad mensual o diaria, debe modificarse la expresión regular.
+
+Estos valores se guardarán en un fichero SHP que actuará como índice, cuya estructura se define mediante un fichero llamado ``indexer.properties``::
+
+  Schema=the_geom:Polygon,location:String,time:java.util.Date
+  TimeAttribute=time
+  PropertyCollectors=TimestampFileNameExtractorSPI[timeregex](time)
+
+Que se lee:
+
+ #. Genera un índice con tres campos: La geometría poligonal de cada imagen, el nombre del archivo, y el tiempo.
+ #. El camo que indica el tiempo es el de nombre *time*.
+ #. Para rellenar el campo *time*, aplica la exprexion regular del fichero ``timeregex.properties``.
+
+Generalmente basta con crear el archivo ``indexer.properties`` y pegar el contenido aquí indicado, tal cual.
+
+Por último, la capa se publicará como un **ImageMosaic**, y se comprobará que en la pestaña *dimensions* está habilitada la dimensión que corresponda.
 
 
 Formato KML
 ...........
 
+Uno de los visores más adecuados para representar datos de altura y tiempo es Google Earth, y por tanto, es muy conveniente poder aprovechar estas dimensiones en el formato KML. Por motivos históricos, KML no aprovecha las definiciones de la pestaña *dimensions*, y debemos definirlas mediante ficheros de plantilla en el directorio de datos de geoserver.
+
+**Nota**: Según las pruebas realizadas, esta funcionalidad sólo está disponible para capas vectoriales.
+
+Por ejemplo, situándose en ``GEOSERVER_DATA_DIR/workspaces/<workspace>/<store>/<layer>``, crear el fichero ``time.ftl``::
+
+  ${date.rawValue}
+
+Esto indica que el valor de tiempo viene definido en el atributo *date*. Entonces, utilizando el reflector KML, generamos los datos::
+
+  http://localhost:8080/geoserver/wms/kml?layers=<capa>&mode=download
+
+Y obtendremos un KML que, en Google Earth, hará aparecer el control de selección y animación temporal:
+
+.. figure:: img/gearth_time.png
+   :align: center
+   :width: 400
+   :height: 200
+
+   Control temporal en Google Earth, generado a partir de una capa de |GS|.
 
 
 WFS Avanzado
@@ -205,28 +292,19 @@ WFS Avanzado
 Filtrado CQL
 ------------
 
-
-Buscador
---------
-
-Con CQL, paginación y GeoRSS (=> OpenSearch?)
+[Micho]
 
 
-Procesos
-========
+Procesos y WPS
+==============
 
-Scripting...
+[Oscar] ¿Scripting?
 
 
 SLD Avanzado
 ============
 
-Estilos externos
-----------------
-
-
-Transformaciones
-----------------
+[Oscar] Mucha tela...
 
 
 
@@ -248,26 +326,35 @@ Es precisamente gracias a los espacios de trabajo por lo que es posible la admin
 APIs REST
 ---------
 
-
+[Micho]
 
 
 Extensiones
 ===========
 
-Breve resumen.
+[Micho] *Muy* breve listado y descripción de las extensiones más destacables, sean oficiales o community (ver gdoc). Con especial mención de formatos vía extensiones de BDD propietarias, ImageIO-ext
 
 
-Transformaciones de coordenadas
-===============================
+Transformaciones de rejilla NTv2
+================================
 
-
-¿Interoperabilidad?
-===================
-
+[Oscar] Simplemente indicar cómo usar la rejilla NTv2 del IGN para solucionar ED50 vs. ETRS89. 
 
 
 Conclusiones
 ============
+
+Considerar que |GS| es un servidor de mapas WMS es tener una visión muy reducida de las posibilidades que ofrece. |GS| es una herramienta que nos permite publicar en la red prácticamente cualquier colección de datos geográficos, y obtenerlos remotamente prácticamente en cualquier formato que necesitemos: no sólamente imágenes estáticas, sino también imágenes animadas, datos vectoriales, documentos para impresión, *feeds* de suscripción a cambios, visualización 3D y 4D mediante KML, etc.
+
+Además, |GS| permite simbolizar, filtrar y decorar los datos a voluntad, incluso permitiendo a los usuarios controlar . Con la extesión WPS, además podremos multiplicar enormemente las posibilidades de simbolización de los datos, que pueden transformarse al vuelo combinando decenas de operaciones.
+
+Todo esto se realiza utilizando al máximo los estándares OGC y extendiéndolos cuando ha sido necesario, y, allí donde OGC no alcanza, utilizando otros formatos y protocolos habituales en la web, como las APIs REST.
+
+Así, |GS| es un catálogo y repositorio de datos en línea, más un conjunto de herramientas para procesarlos y acceder a ellos de tantas formas como sea posible, y sacando el máximo provecho de los estándares OGC.
+
+Este artículo sólo muestra las características que hemos considerado más destacables, pero existen muchas otras que por falta de espacio no podemos mostrar, y que se encuentran descritas en el manual de usuario del proyecto [#]_.
+
+.. [#] http://docs.geoserver.org/stable/en/user/
 
 
 BORRAME: Directivas RST

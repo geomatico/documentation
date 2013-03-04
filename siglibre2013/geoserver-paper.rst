@@ -122,11 +122,81 @@ Animaciones
 --
 
 
-WFS Avanzado
-============
+Filtrado de datos
+=================
+
+Introducción
+------------
+
+El estandar WFS o Web Feature Service implementado por la OGC es un servicio que permite el intercambio de geometrías, **features**, a través de la web. La diferencia principal con el WMS, o Web Map Service, es que este servicio WFS devuelve como respuesta un grupo de geometrías que permitirán al usuario realizar operaciones utilizando estas directamente, mientras que con el WMS solo tiene acceso a la representación espacial de estas geometrías. En ambos servicios el estandar define el parámetro **filter** mediante el uso del cual podremos realizar filtrado de los resultados a mostrar o descargar. 
+
+OGC describe el estandar Filter Encoding[X], donde define la sintáxis que se puede utilizar para construir expresiones que permitan la consulta de estos y otros servicios. De la misma manera se describe el estandar CQL o Common Query Language[X]. Este se desarrolla como un lenguaje formal para desarrollar consultas con las que poder obtener información de sistemas como indices web, catálogos bibliográficos... La ventaja respecto del Filter Encoding es que se trata de un lenguaje más intuitivo, de lectura y definición más amigable, sin perder en ningún caso todo el potencial. Este estandar se creó para la especificación de Catálogo de la OGC[X].
+
+|GS| implementa ambos estándares, tanto el Filter Encoding, como el CQL en una versión extendida denominada ECQL definida dentro del proyecto GeoTools[X].
+
+Uso de filtrado en servicios WMS y WFS
+--------------------------------------
+El manejo de estos lenguajes de filtrado se realiza a través de las peticiones a los servicios. En el caso del uso del Filter Encoding, el parametro necesario es **filter** en ambos. Este parámetro está incluido dentro del estandar. La definición de las consultas se realiza mediante el uso de etiquetas de una manera similar a como manejaríamos un archivo XML. Por ejemplo, una consulta sencilla sería construida de esta manera::
+
+	<PropertyIsEqualTo>
+		<PropertyName>NOMBRE</PropertyName>
+		<Literal>Valor</Literal>
+	</PropertyIsEqualTo>
+	   
+En la anterior consulta se está indicando que se devuelva todas aquellas geometrías cuya propiedad NOMBRE = Valor. Para incluir esta consulta en la petición simplemente::
+
+	http://localhost:8080/geoserver/namespace/wms?LAYERS=layer%3Aalayer&STYLES=&FORMAT=image%2Fpng&SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap&SRS=EPSG%3A4326&FILTER=<PropertyIsEqualTo><PropertyName>NOMBRE</PropertyName><Literal>Valor</Literal></PropertyIsEqualTo>&BBOX=-139.84870868359,18.549281576172,-51.852562316406,55.778420423828&WIDTH=780&HEIGHT=330
+	
+Al tratarse en este caso de una petición GET donde nos apoyamos en la URL para realizar la consulta, la expresión del filtro deberá codificarse de tal manera que pueda ser enviada dentro de esta URL.
+
+Si se hecha un vistazo a la referencia del estandar Filter Encoding, podremos conocer las diferentes estructuras en las que nos permite apoyarnos para la construcción de los predicados. Por citar algunas tendremos:
+
+	* Operadores de comparación.
+		* Operadores binarios de comparación
+		* Operador PropertyIsLike
+		* ...
+	* Operadores espaciales.
+		* Intersects
+		* Disjoint
+		* Operador BBOX
+	* Operadores lógicos
+	* Expresiones
+	
+	.. note::
+		En ningún caso es objetivo de este artículo mostrar la totalidad del estandar Filter Encoding por lo que se recomienda la revisión de este para un mejor entendimiento.
+
+La construción de predicados apoyandose en este estandar puede convertirse en una operación compleja debido al manejo de las etiquetas de las diferentes operaciones. Por ejemplo, mediante esta operación estaríamos solicitando aquellas geometrías que cumpliesen diferentes predicados::
+
+	<And>
+		<Intersects xmlns:gml="http://www.opengis.net/gml">
+			<PropertyName>the_geom</PropertyName>
+			<gml:LineString><gml:coordinates>-125.68909683702887,50.174101053227751 -73.113095687349627,25.904513103468322 -73.113095687349627,25.904513103468322 -71.75127512103046,29.50361031445469</gml:coordinates></gml:LineString>
+		</Intersects>
+		<PropertyIsGreaterThan>
+			<PropertyName>MALE</PropertyName>
+			<PropertyName>FEMALE</PropertyName>
+		</PropertyIsGreaterThan>
+	</And>
+	
+CQL (Common Query Language) permite el manejo de consultas de una manera similar. En caso de querer representar la misma expresión básica del ejemplo anterior haremos::
+
+	NOMBRE = Valor
+	
+como se puede observar la síntaxis es mucho más amigable, intentando equipararse a lenguajes de consulta más extendidos como el SQL.
+Para ejecutar esta consulta en el servidor simplemente deberemos acompañar las peticiones con el parámetro **CQL_FILTER**::
+
+	http://localhost:8080/geoserver/namespace/wms?LAYERS=layer%3alayer&STYLES=&FORMAT=image%2Fpng&SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap&SRS=EPSG%3A4326&CQL_FILTER=NOMBRE%20%3D%20'Valor'&BBOX=-139.84870868359,18.549281576172,-51.852562316406,55.778420423828&WIDTH=780&HEIGHT=330
+	
+|GS| implementa una extensión del lenguaje CQL denominada **ECQL**. Se puede ver una referencia del lenguaje en la documentación de GeoTools[X], proyecto bajo el que se ha desarrollado esta extensión. 
+
+Si representasemos la expresión anterior mediante el lenguaje ECQL tendríamos::
+
+	INTERSECTS(the_geom, LINESTRING(-125.68909683702887 50.174101053227751, -73.113095687349627 25.904513103468322, -73.113095687349627 25.904513103468322, -71.7512751210304629.50361031445469)) AND MALE > FEMALE	
 
 Filtrado CQL
 ------------
+
+
 
 
 Buscador

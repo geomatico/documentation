@@ -325,6 +325,7 @@ Si se hecha un vistazo a la referencia del estandar Filter Encoding, podremos co
 	* Operadores lógicos
 	* Expresiones
 	
+	
 	.. note::
 		En ningún caso es objetivo de este artículo mostrar la totalidad del estandar Filter Encoding por lo que se recomienda la revisión de este para un mejor entendimiento.
 
@@ -390,9 +391,77 @@ Es precisamente gracias a los espacios de trabajo por lo que es posible la admin
 APIs REST
 ---------
 
-[Micho]
+|GS| dispone de una interfaz RESTful a través de la cual los clientes pueden manejar las diferentes funciones simplemente mediante llamadas HTTP. De esta manera se podrá configurar |GS| sin necesidad de acceder al Interfaz de administración web. 
 
+REST, REpresentational State Transfer, se trata de una interfaz web simple que se basa en el uso de XML y HTTP. Permite leer y escribir datos en el servidor utilizando estos protocolos.
 
+Las operaciones en los recursos están implementadas usando las funciones de HTTP: GET, PUT, POST y DELETE. En REST, cada recurso está definido por una URL. 
+
+|GS| implementa REST y pone a disposición del usuario una API con la que acceder a las diferentes funciones. Mediante el uso de esta API, podremos automatizar muchas de las necesidades habituales que surgen a menudo en el manejo de |GS|, como la publicación de grandes cantidades de archivos...
+
+Uso de la API REST
+^^^^^^^^^^^^^^^^^^
+
+Para acceder a la funcionalidad de la API REST de |GS| deberemos ejecutar nuestras peticiones contra::
+
+	../geoserver/rest/
+	
+Hemos de tener en cuenta algunos detalles sobre el uso de la API, como los estados manejados en las peticiones HTTP (200, 201, 403...) que nos indicarán el resultado de las operaciones que estamos ejecutando, y el tipo de contenido, formatos, con los que vamos a estar trabajando (application/xml, application/json...) tanto en las peticiones como en las respuestas.
+
+	.. figure:: img/GSConfigurationAPI.png
+		:align: center
+		:width: 400
+		:height: 399
+   
+   	/geoserver/rest accediendo a la API desde el navegador
+   
+   .. figure:: img/GSAPILayers.png
+		:align: center
+		:width: 400
+		:height: 599
+   
+   	/geoserver/rest/layers listado de capas
+   	
+   .. figure:: img/GSAPIaboutversion.png
+		:align: center
+		:width: 400
+		:height: 199
+   
+   	/geoserver/rest/layers listado de capas
+   	
+Por ejemplo para la publicación de un archivo ESRI Shapefile[#]_, haciendo uso de cURL[#]_, herramienta que nos permitirá realizar las peticiones a través del protocolo HTTP haciendo uso de los métodos POST, PUT...
+
+Siguiendo por partes el proceso, realizaremos:
+
+Creación de un espacio de trabajo (workspace)::
+	
+	curl -v -u admin:password -XPOST -H "Content-type: text/xml" -d "<workspace><name>test</name></workspace>" http://localhost:8080/geoserver/rest/workspaces
+	
+	-v modo verbose
+	-u usuario:contraseña
+	-XPOST tipo de petición POST
+	-H cabecera
+	-d datos
+   
+Si la respuesta muestra un código 201 nuestro recurso se habrá creado satisfactoriamente. Podremos examinar este recurso accediendo desde un navegador a /geoserver/rest/workspaces o ejecutando::
+
+	curl -v -u admin:password -XGET http://.../geoserver/rest/workspaces
+	
+Una vez que hemos creado nuestro espacio de trabajo procedemos a la carga del recurso::
+
+	curl -v -u admin:password -XPUT -H "Content-type: application/zip" --data-binary @roads.zip http://localhost:8080/geoserver/rest/workspaces/test/datastores/roads/file.shp
+	
+	-XPUT tipo de petición PUT
+	--data-binary @path_al_archivo
+	
+La URL se contruye /geoserver/rest/workspaces/<nombre del namespace>/datastores/<nombre del recurso>/file.shp.
+
+Podremos comprobar el resultado de la operación accediendo al recurso mediante::
+
+	curl -v -u admin:password -XGET /geoserver/rest/workspaces/test/datastores/roads.xml
+
+Para una descripción mas intensiva de todas las operaciones que soporta la API REST de |GS| revisar la documentación[#]_
+	
 Extensiones
 ===========
 
@@ -438,7 +507,7 @@ Notas a pie [#]_ autonuméricas [#]_.
 .. [#] Segunda nota a pie.
 
 
-Esto es una figura. Poner width a 500, y height proporcional. Formato de imagen en png (no acepta vectoriales):
+Esto es una figura. Poner width a 400, y height proporcional. Formato de imagen en png (no acepta vectoriales):
 
 .. figure:: img/geomatico.png
    :align: center

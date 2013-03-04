@@ -70,8 +70,8 @@ Tal como se espera, WMS ofrece los formatos de imagen habituales: GIF, PNG y JPE
 
 .. figure:: img/png_quantizers.png
    :align: center
-   :width: 500
-   :height: 250
+   :width: 400
+   :height: 200
 
    PNG8 generado en versiones anteriores (izquierda) y mejoras a partir de la versión 2.2 (derecha)
 
@@ -88,39 +88,202 @@ Tal como se espera, WMS ofrece los formatos de imagen habituales: GIF, PNG y JPE
 
 * **application/pdf**, que también se generará en formato vectorial cuando las capas sean vectoriales. Ideal para generar documentos para su impresión en alta calidad.
 
-* **rss**, utilizable para monitorizar cambios en capas cuyo contenido cambie en el tiempo (eventos).
+* **application/rss** y **application/atom**, útil para suscribirse a capas cuyos datos cambien con el tiempo. Las geometrías se codifican en formato GeoRSS, de modo que un visor adecuado (como OpenLayers [#]_) se pueden mostrar los resultados sobre un mapa.
 
-[[TODO montar capa dependiente del tiempo]]
+.. [#] http://openlayers.org/dev/examples/georss.html
 
+* **kml** y **kmz**, permite ver el contenido en 3D en Google Earth. Dispone de varios parámetros específicos para controlar la manera como se obtienen los contenidos: incrementalmente utilizando networklinks, de forma rasterizada (descarga completa o mediante teselado *superoverlay*), de forma vectorial, etc. Combinado con las opciones de extrusión 3D de y marcas temporales, permite animaciones y vistas tridimensionales, como veremos más adelante.
 
-
-* **kml** y **kmz**, permite ver el contenido en 3D en Google Earth. Dispone de varios parámetros específicos para controlar la manera como se obtienen los contenidos: incrementalmente utilizando networklinks, de forma rasterizada, de forma vectorial, etc. Combinado con las opciones de extrusión 3D y marcas temporales, permite animaciones y vistas tridimensionales, como veremos más adelante.
-
-* **application/openlayers** genera un visor completo basado en OpenLayers a partir de una simple petición WMS. Es la opción que utiliza |GS| en su **layer preview**. Proporciona interactividad y la posibilidad de generar visores sencillos incrustables en páginas web sin tener que programar.
-
+* **application/openlayers** genera un visor completo basado en OpenLayers a partir de una simple petición WMS. Es la opción que utiliza |GS| en su **layer preview**. Proporciona un método muy sencillo de incrustar visores en otras páginas web, enviarlos como enlace en un correo electrónico, etc.
 
 
 Parámetros específicos
 ----------------------
 
-Además de los parámetros WMS estándar, |GS| proporciona una colección de parámetros específicos que extienden su funcionalidad:
+Además de los parámetros WMS estándar, |GS| proporciona una colección de parámetros específicos que extienden su funcionalidad. Generalmente estos parámetros se utilizan ligados a algún caso de uso concreto. Es decir, la mayoría de ellos no tiene sentido usarlos en cualquier petición. Veamos algunos de los más interesantes:
 
-* **angle**, permite orientar la imagen. 
+* **angle**, permite orientar la imagen.
+
+.. figure:: img/angle.png
+   :align: center
+   :width: 400
+   :height: 200
+
+   Petición WMS orientada al norte (izquierda) y con un ángulo de 45 grados (derecha).
+
+* **cql_filter**, permite seleccionar qué geometrías quieren mostrarse, mediante unas sintaxis de filtrado (CQL y ECQL) muy compactas pero potentes. Por ejemplo, para obtener los elementos en un radio de 250 metros respecto a un punto dado::
+
+  cql_filter=DWITHIN(the_geom, POINT (431198 4581563), 250, meters)
+
+.. figure:: img/cql_filter.png
+   :align: center
+   :width: 400
+   :height: 200
+
+   Capa original (izquierda) y con el filtro de ejemplo aplicado (derecha).
+
+Dedicaremos un apartado más adelante a ver sus posibilidades, entre las que se incluyen filtrados geométricos y temporales.
+
+* **env**, permite especificar un conjunto de valores que se utilizarán para la simbolización personalizada. Los valores dependerán de cómo se contruya el SLD de visualización. Por ejemplo, podemos escoger qué símbolo se utilizará para un tipo de elemento, su tamaño y color. Veremos ejemplos en el apartado dedicado a simbolización.
 
 
 Decoraciones
 ------------
 
+En una imagen generada mediande WMS, además del propio contenido del mapa, nos puede interesar añadir alguna información contextual como la escala gráfica o numérica, la leyenda, e incluso textos e imágenes personalizadas.
+
+Para ello, |GS| proporciona una manera de definir composiciones o *layouts* [#]_. 
+
+.. [#] http://docs.geoserver.org/latest/en/user/advanced/wmsdecoration.html
+
+Por ejemplo, el siguiente *layout* define tres decoraciones (leyenda, escala gráfica e imagen personalizada):
+
+.. code-block:: xml
+
+  <layout>
+    <decoration type="legend" affinity="top,right" offset="12,12" size="auto"/>
+
+    <decoration type="scaleline" affinity="bottom,right" offset="12,12" size="auto"/>
+
+    <decoration type="image" affinity="bottom,center" offset="12,12" size="360,64">
+      <option name="url" value="layouts/geomatico.png"/>
+    </decoration>
+  </layout>
+
+Los ficheros de *layout* deben guardarse en ``GEOSERVER_DATA_DIR/layouts/nombre.xml`` , e invocarse mediante ``&FORMAT_OPTIONS=layout:nombre`` en la petición WMS.
+
+.. figure:: img/decorations.png
+   :align: center
+   :width: 400
+   :height: 200
+
+   Resultado obtenido de aplicar el *layout* anterior a una petición WMS.
 
 
 Animaciones
 -----------
 
+Aunque se base en el protocolo WMS, este servicio es completamente específico de GeoServer, y se utiliza para generar GIFs animados. utiliza dos parámetros:
+
+* **aparam**: El parámetro que se desea animar. Puede ser cualquiera de los parámetros WMS, pero también cualquiera de los parámetros específicos de |GS|. Esto permite animar la posición, proyección, tamaño, tiempo, estilo, parámetros de estilo (env), ángulo, decoraciones, etc.
+
+* **avalues**: una lista de valores que debe tomar el parámetro para cada uno de los *frames* del GIF animado::
+
+  http://localhost:8080/geoserver/wms/animate
+  ?layers=<capa>
+  &aparam=<parameto>
+  &avalues=<valores>
+
+Como se observa, la dirección de base ya no es ``/geoserver/wms``, sino ``geoserver/wms/animate``. 
+
+Se pueden especificar las siguentes opciones de formato (**format_options**):
+
+* **gif_loop_continuosly**: Para repetir la animación indefinidamente, o ejecutarla una sola vez.
+* **gif_frames_delay*: El tiempo (en milisegundos) entre dos frames. Controla la velocidad de la animación.
+
+Estas animaciones sólo se pueden generar en formato GIF.
 
 
-3D
---
+Altura y tiempo
+---------------
 
+|GS| es capaz de gestionar también los parámetros de altura y de tiempo. Existen dos maneras distintas de gestionar estas dimensiones, según si utilizamos los formatos de imagen clásicos, o queremos generar un fichero KML para su visualización en Google Earth.
+
+
+Datos Vectoriales
+.................
+
+Al publicar una capa vectorial, podemos definir el tiempo o la altura de cada *feature* mediante la pestaña *dimensions* en las propiedades de la capa.
+
+Para que se habilite la dimensión temporal, debe existir al menos un atributo de tipo *date* o *timestamp*. También se puede definir un rango de tiempo, que puede ser fijo (como en la figura) o venir determinado por un segundo atributo temporal que marcará el fin del período.
+
+Al realizar una petición WMS, se utilizará el parámetro ``TIME=`` para visualizar las *features* de un instante dado. O bien, puede definirse un rango utilizando ``/`` como separador. Por ejemplo, ``TIME=1984/2001`` indicaría *muéstrame todas las *features* ente los años 1984 y 2001*.
+
+.. figure:: img/dimensions.png
+   :align: center
+   :width: 400
+   :height: 360
+
+   Pestaña *dimensions* en las propiedades de una capa vectorial.
+
+
+De forma análoga, para poder habilitar la dimensión de altura, debe existir al menos un atributo de tipo numérico. Igualmente, puede definirse un rango de alturas utilizando un segundo atributo numérico. En las peticiones WMS, se utilizará el parámetro ``ELEVATION=`` para indicar un valor de elevación, o un rango utilizando el separador ``/``.
+
+.. figure:: img/elevation.png
+   :align: center
+   :width: 400
+   :height: 200
+
+   Capa de curvas de nivel sin parámetro elevación (izquierda), y con un filtro de elevación (derecha).
+
+
+**Atención**, si en una petición WMS de una capa temporal no se indica ningún parámetro ``TIME``, la respuesta WMS contendrá sólamente las *features* más recientes. Igualmente, en una capa de elevaciones sin parámetro ``ELEVATION``, sólo se mostrarán aquellas de menor elevación. En el documento de *GetCapabilities* del servicio WMS se podrán consultar las listas de valores válidos tanto de altura como de tiempo para cada capa.
+
+
+Datos Raster
+............
+
+Los datos raster con tiempos y alturas son algo más complejos de configurar. Cada instante temporal o de altura vendrá representado por un ficher distinto. Puesto que no existe una tabla con atributos que pueda indicar a |GS| el tiempo o altura correspondiente a cada fichero, habrá que generar un índice a partir de los nombres de los archivos.
+
+Así, indicaremos mediante una expresión regular qué parte del nombre de archivo corresponde a una fecha o una altura. Por ejemplo, a partir de esta colección de ortofotos históricas::
+
+  historic-1990.tif
+  historic-1993.tif
+  historic-1996.tif
+  historic-2000.tif
+  historic-2003.tif
+  historic-2004.tif
+  historic-2006.tif
+  historic-2008.tif
+  historic-2009.tif
+  historic-2010.tif
+
+Crearemos un fichero ``timeregex.properties`` cuyo contenido será::
+
+  regex=[0-9]{4}
+
+Cuya interpretación es: El tiempo viene determinado por cuatro cifras consecutivas en el nombre de archivo. Así, |GS| capturará los valores 1990, 1993, 1996, 2000, 2003, 2004, 2006, 2008, 2009 y 2010 como instantes temporales en el momento de publicar esta capa. En caso de utilizar datos con periodicidad mensual o diaria, debe modificarse la expresión regular.
+
+Estos valores se guardarán en un fichero SHP que actuará como índice, cuya estructura se define mediante un fichero llamado ``indexer.properties``::
+
+  Schema=the_geom:Polygon,location:String,time:java.util.Date
+  TimeAttribute=time
+  PropertyCollectors=TimestampFileNameExtractorSPI[timeregex](time)
+
+Que se lee:
+
+ #. Genera un índice con tres campos: La geometría poligonal de cada imagen, el nombre del archivo, y el tiempo.
+ #. El camo que indica el tiempo es el de nombre *time*.
+ #. Para rellenar el campo *time*, aplica la exprexion regular del fichero ``timeregex.properties``.
+
+Generalmente basta con crear el archivo ``indexer.properties`` y pegar el contenido aquí indicado, tal cual.
+
+Por último, la capa se publicará como un **ImageMosaic**, y se comprobará que en la pestaña *dimensions* está habilitada la dimensión que corresponda.
+
+
+Formato KML
+...........
+
+Uno de los visores más adecuados para representar datos de altura y tiempo es Google Earth, y por tanto, es muy conveniente poder aprovechar estas dimensiones en el formato KML. Por motivos históricos, KML no aprovecha las definiciones de la pestaña *dimensions*, y debemos definirlas mediante ficheros de plantilla en el directorio de datos de geoserver.
+
+**Nota**: Según las pruebas realizadas, esta funcionalidad sólo está disponible para capas vectoriales.
+
+Por ejemplo, situándose en ``GEOSERVER_DATA_DIR/workspaces/<workspace>/<store>/<layer>``, crear el fichero ``time.ftl``::
+
+  ${date.rawValue}
+
+Esto indica que el valor de tiempo viene definido en el atributo *date*. Entonces, utilizando el reflector KML, generamos los datos::
+
+  http://localhost:8080/geoserver/wms/kml?layers=<capa>&mode=download
+
+Y obtendremos un KML que, en Google Earth, hará aparecer el control de selección y animación temporal:
+
+.. figure:: img/gearth_time.png
+   :align: center
+   :width: 400
+   :height: 200
+
+   Control temporal en Google Earth, generado a partir de una capa de |GS|.
 
 Filtrado de datos
 =================
@@ -130,9 +293,9 @@ Introducción
 
 El estandar WFS o Web Feature Service implementado por la OGC es un servicio que permite el intercambio de geometrías, **features**, a través de la web. La diferencia principal con el WMS, o Web Map Service, es que este servicio WFS devuelve como respuesta un grupo de geometrías que permitirán al usuario realizar operaciones utilizando estas directamente, mientras que con el WMS solo tiene acceso a la representación espacial de estas geometrías. En ambos servicios el estandar define el parámetro **filter** mediante el uso del cual podremos realizar filtrado de los resultados a mostrar o descargar. 
 
-OGC describe el estandar Filter Encoding[X], donde define la sintáxis que se puede utilizar para construir expresiones que permitan la consulta de estos y otros servicios. De la misma manera se describe el estandar CQL o Common Query Language[X]. Este se desarrolla como un lenguaje formal para desarrollar consultas con las que poder obtener información de sistemas como indices web, catálogos bibliográficos... La ventaja respecto del Filter Encoding es que se trata de un lenguaje más intuitivo, de lectura y definición más amigable, sin perder en ningún caso todo el potencial. Este estandar se creó para la especificación de Catálogo de la OGC[X].
+OGC describe el estandar Filter Encoding[#]_, donde define la sintáxis que se puede utilizar para construir expresiones que permitan la consulta de estos y otros servicios. De la misma manera se describe el estandar CQL o Common Query Language[#]_. Este se desarrolla como un lenguaje formal para desarrollar consultas con las que poder obtener información de sistemas como indices web, catálogos bibliográficos... La ventaja respecto del Filter Encoding es que se trata de un lenguaje más intuitivo, de lectura y definición más amigable, sin perder en ningún caso todo el potencial. Este estandar se creó para la especificación de Catálogo de la OGC[#]_.
 
-|GS| implementa ambos estándares, tanto el Filter Encoding, como el CQL en una versión extendida denominada ECQL definida dentro del proyecto GeoTools[X].
+|GS| implementa ambos estándares, tanto el Filter Encoding, como el CQL en una versión extendida denominada ECQL definida dentro del proyecto GeoTools[#]_.
 
 Uso de filtrado en servicios WMS y WFS
 --------------------------------------
@@ -187,39 +350,26 @@ Para ejecutar esta consulta en el servidor simplemente deberemos acompañar las 
 
 	http://localhost:8080/geoserver/namespace/wms?LAYERS=layer%3alayer&STYLES=&FORMAT=image%2Fpng&SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap&SRS=EPSG%3A4326&CQL_FILTER=NOMBRE%20%3D%20'Valor'&BBOX=-139.84870868359,18.549281576172,-51.852562316406,55.778420423828&WIDTH=780&HEIGHT=330
 	
-|GS| implementa una extensión del lenguaje CQL denominada **ECQL**. Se puede ver una referencia del lenguaje en la documentación de GeoTools[X], proyecto bajo el que se ha desarrollado esta extensión. 
+|GS| implementa una extensión del lenguaje CQL denominada **ECQL**. Se puede ver una referencia del lenguaje en la documentación de GeoTools[#]_, proyecto bajo el que se ha desarrollado esta extensión. 
 
 Si representasemos la expresión anterior mediante el lenguaje ECQL tendríamos::
 
-	INTERSECTS(the_geom, LINESTRING(-125.68909683702887 50.174101053227751, -73.113095687349627 25.904513103468322, -73.113095687349627 25.904513103468322, -71.7512751210304629.50361031445469)) AND MALE > FEMALE	
+	INTERSECTS(the_geom, LINESTRING(-125.68909683702887 50.174101053227751, -73.113095687349627 25.904513103468322, -73.113095687349627 25.904513103468322, -71.7512751210304629.50361031445469)) AND MALE > FEMALE
+	
+Uso de CQL
+----------
 
-Filtrado CQL
-------------
+Procesos y WPS
+==============
 
-
-
-
-Buscador
---------
-
-Con CQL, paginación y GeoRSS (=> OpenSearch?)
+[Oscar] ¿Scripting?
 
 
 SLD Avanzado
 ============
 
-Estilos externos
-----------------
+[Oscar] Mucha tela...
 
-
-Transformaciones
-----------------
-
-
-WPS Avanzado
-============
-
-Scripting...
 
 
 Más allá de los estándares OGC
@@ -240,23 +390,35 @@ Es precisamente gracias a los espacios de trabajo por lo que es posible la admin
 APIs REST
 ---------
 
-
+[Micho]
 
 
 Extensiones
 ===========
 
-Breve resumen.
+[Micho] *Muy* breve listado y descripción de las extensiones más destacables, sean oficiales o community (ver gdoc). Con especial mención de formatos vía extensiones de BDD propietarias, ImageIO-ext
 
 
+Transformaciones de rejilla NTv2
+================================
 
-¿Interoperabilidad?
-===================
-
+[Oscar] Simplemente indicar cómo usar la rejilla NTv2 del IGN para solucionar ED50 vs. ETRS89. 
 
 
 Conclusiones
 ============
+
+Considerar que |GS| es un servidor de mapas WMS es tener una visión muy reducida de las posibilidades que ofrece. |GS| es una herramienta que nos permite publicar en la red prácticamente cualquier colección de datos geográficos, y obtenerlos remotamente prácticamente en cualquier formato que necesitemos: no sólamente imágenes estáticas, sino también imágenes animadas, datos vectoriales, documentos para impresión, *feeds* de suscripción a cambios, visualización 3D y 4D mediante KML, etc.
+
+Además, |GS| permite simbolizar, filtrar y decorar los datos a voluntad, incluso permitiendo a los usuarios controlar . Con la extesión WPS, además podremos multiplicar enormemente las posibilidades de simbolización de los datos, que pueden transformarse al vuelo combinando decenas de operaciones.
+
+Todo esto se realiza utilizando al máximo los estándares OGC y extendiéndolos cuando ha sido necesario, y, allí donde OGC no alcanza, utilizando otros formatos y protocolos habituales en la web, como las APIs REST.
+
+Así, |GS| es un catálogo y repositorio de datos en línea, más un conjunto de herramientas para procesarlos y acceder a ellos de tantas formas como sea posible, y sacando el máximo provecho de los estándares OGC.
+
+Este artículo sólo muestra las características que hemos considerado más destacables, pero existen muchas otras que por falta de espacio no podemos mostrar, y que se encuentran descritas en el manual de usuario del proyecto [#]_.
+
+.. [#] http://docs.geoserver.org/stable/en/user/
 
 
 BORRAME: Directivas RST

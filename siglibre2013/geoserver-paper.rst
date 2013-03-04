@@ -179,7 +179,7 @@ Como se observa, la dirección de base ya no es ``/geoserver/wms``, sino ``geose
 Se pueden especificar las siguentes opciones de formato (**format_options**):
 
 * **gif_loop_continuosly**: Para repetir la animación indefinidamente, o ejecutarla una sola vez.
-* **gif_frames_delay*: El tiempo (en milisegundos) entre dos frames. Controla la velocidad de la animación.
+* **gif_frames_delay**: El tiempo (en milisegundos) entre dos frames. Controla la velocidad de la animación.
 
 Estas animaciones sólo se pueden generar en formato GIF.
 
@@ -299,6 +299,7 @@ OGC describe el estandar Filter Encoding[#]_, donde define la sintáxis que se p
 
 Uso de filtrado en servicios WMS y WFS
 --------------------------------------
+
 El manejo de estos lenguajes de filtrado se realiza a través de las peticiones a los servicios. En el caso del uso del Filter Encoding, el parametro necesario es **filter** en ambos. Este parámetro está incluido dentro del estandar. La definición de las consultas se realiza mediante el uso de etiquetas de una manera similar a como manejaríamos un archivo XML. Por ejemplo, una consulta sencilla sería construida de esta manera::
 
 	<PropertyIsEqualTo>
@@ -400,7 +401,7 @@ Las operaciones en los recursos están implementadas usando las funciones de HTT
 |GS| implementa REST y pone a disposición del usuario una API con la que acceder a las diferentes funciones. Mediante el uso de esta API, podremos automatizar muchas de las necesidades habituales que surgen a menudo en el manejo de |GS|, como la publicación de grandes cantidades de archivos...
 
 Uso de la API REST
-^^^^^^^^^^^^^^^^^^
+..................
 
 Para acceder a la funcionalidad de la API REST de |GS| deberemos ejecutar nuestras peticiones contra::
 
@@ -408,26 +409,26 @@ Para acceder a la funcionalidad de la API REST de |GS| deberemos ejecutar nuestr
 	
 Hemos de tener en cuenta algunos detalles sobre el uso de la API, como los estados manejados en las peticiones HTTP (200, 201, 403...) que nos indicarán el resultado de las operaciones que estamos ejecutando, y el tipo de contenido, formatos, con los que vamos a estar trabajando (application/xml, application/json...) tanto en las peticiones como en las respuestas.
 
-	.. figure:: img/GSConfigurationAPI.png
-		:align: center
-		:width: 400
-		:height: 399
+.. figure:: img/GSConfigurationAPI.png
+   :align: center
+   :width: 200
+   :height: 400
+
+   /geoserver/rest accediendo a la API desde el navegador
    
-   	/geoserver/rest accediendo a la API desde el navegador
-   
-   .. figure:: img/GSAPILayers.png
-		:align: center
-		:width: 400
-		:height: 599
-   
-   	/geoserver/rest/layers listado de capas
-   	
-   .. figure:: img/GSAPIaboutversion.png
-		:align: center
-		:width: 400
-		:height: 199
-   
-   	/geoserver/rest/layers listado de capas
+.. figure:: img/GSAPILayers.png
+   :align: center
+   :width: 200
+   :height: 300
+
+   /geoserver/rest/layers listado de capas
+	
+.. figure:: img/GSAPIaboutversion.png
+   :align: center
+   :width: 200
+   :height: 100
+
+   /geoserver/rest/layers listado de capas
    	
 Por ejemplo para la publicación de un archivo ESRI Shapefile[#]_, haciendo uso de cURL[#]_, herramienta que nos permitirá realizar las peticiones a través del protocolo HTTP haciendo uso de los métodos POST, PUT...
 

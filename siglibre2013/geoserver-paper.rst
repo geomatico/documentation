@@ -293,9 +293,10 @@ Introducción
 
 El estandar WFS o Web Feature Service implementado por la OGC es un servicio que permite el intercambio de geometrías, **features**, a través de la web. La diferencia principal con el WMS, o Web Map Service, es que este servicio WFS devuelve como respuesta un grupo de geometrías que permitirán al usuario realizar operaciones utilizando estas directamente, mientras que con el WMS solo tiene acceso a la representación espacial de estas geometrías. En ambos servicios el estandar define el parámetro **filter** mediante el uso del cual podremos realizar filtrado de los resultados a mostrar o descargar. 
 
-OGC describe el estandar Filter Encoding[#]_, donde define la sintáxis que se puede utilizar para construir expresiones que permitan la consulta de estos y otros servicios. De la misma manera se describe el estandar CQL o Common Query Language[#]_. Este se desarrolla como un lenguaje formal para desarrollar consultas con las que poder obtener información de sistemas como indices web, catálogos bibliográficos... La ventaja respecto del Filter Encoding es que se trata de un lenguaje más intuitivo, de lectura y definición más amigable, sin perder en ningún caso todo el potencial. Este estandar se creó para la especificación de Catálogo de la OGC[#]_.
+OGC describe el estandar Filter Encoding, donde define la sintáxis que se puede utilizar para construir expresiones que permitan la consulta de estos y otros servicios. De la misma manera se describe el estandar CQL o Common Query Language. Este se desarrolla como un lenguaje formal para desarrollar consultas con las que poder obtener información de sistemas como indices web, catálogos bibliográficos... La ventaja respecto del Filter Encoding es que se trata de un lenguaje más intuitivo, de lectura y definición más amigable, sin perder en ningún caso todo el potencial. Este estandar se creó para la especificación de Catálogo de la OGC.
 
-|GS| implementa ambos estándares, tanto el Filter Encoding, como el CQL en una versión extendida denominada ECQL definida dentro del proyecto GeoTools[#]_.
+|GS| implementa ambos estándares, tanto el Filter Encoding, como el CQL en una versión extendida denominada ECQL definida dentro del proyecto GeoTools.
+
 
 Uso de filtrado en servicios WMS y WFS
 --------------------------------------
@@ -350,7 +351,7 @@ Para ejecutar esta consulta en el servidor simplemente deberemos acompañar las 
 
 	http://localhost:8080/geoserver/namespace/wms?LAYERS=layer%3alayer&STYLES=&FORMAT=image%2Fpng&SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap&SRS=EPSG%3A4326&CQL_FILTER=NOMBRE%20%3D%20'Valor'&BBOX=-139.84870868359,18.549281576172,-51.852562316406,55.778420423828&WIDTH=780&HEIGHT=330
 	
-|GS| implementa una extensión del lenguaje CQL denominada **ECQL**. Se puede ver una referencia del lenguaje en la documentación de GeoTools[#]_, proyecto bajo el que se ha desarrollado esta extensión. 
+|GS| implementa una extensión del lenguaje CQL denominada **ECQL**. Se puede ver una referencia del lenguaje en la documentación de GeoTools, proyecto bajo el que se ha desarrollado esta extensión. 
 
 Si representasemos la expresión anterior mediante el lenguaje ECQL tendríamos::
 
@@ -413,7 +414,7 @@ Hemos de tener en cuenta algunos detalles sobre el uso de la API, como los estad
 
    /geoserver/rest/layers listado de capas
    	
-Por ejemplo para la publicación de un archivo ESRI Shapefile[#]_, haciendo uso de cURL[#]_, herramienta que nos permitirá realizar las peticiones a través del protocolo HTTP haciendo uso de los métodos POST, PUT...
+Por ejemplo para la publicación de un archivo ESRI Shapefile, haciendo uso de cURL, herramienta que nos permitirá realizar las peticiones a través del protocolo HTTP haciendo uso de los métodos POST, PUT...
 
 Siguiendo por partes el proceso, realizaremos:
 
@@ -444,7 +445,7 @@ Podremos comprobar el resultado de la operación accediendo al recurso mediante:
 
 	curl -v -u admin:password -XGET /geoserver/rest/workspaces/test/datastores/roads.xml
 
-Para una descripción mas intensiva de todas las operaciones que soporta la API REST de |GS| revisar la documentación[#]_
+Para una descripción mas intensiva de todas las operaciones que soporta la API REST de |GS| revisar la documentación
 	
 Extensiones
 ===========

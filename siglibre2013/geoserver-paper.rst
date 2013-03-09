@@ -325,10 +325,8 @@ Si se hecha un vistazo a la referencia del estandar Filter Encoding, podremos co
 		* Operador BBOX
 	* Operadores lógicos
 	* Expresiones
-	
-	
-	.. note::
-		En ningún caso es objetivo de este artículo mostrar la totalidad del estandar Filter Encoding por lo que se recomienda la revisión de este para un mejor entendimiento.
+
+.. note:: En ningún caso es objetivo de este artículo mostrar la totalidad del estandar Filter Encoding por lo que se recomienda la revisión de este para un mejor entendimiento.
 
 La construción de predicados apoyandose en este estandar puede convertirse en una operación compleja debido al manejo de las etiquetas de las diferentes operaciones. Por ejemplo, mediante esta operación estaríamos solicitando aquellas geometrías que cumpliesen diferentes predicados::
 
@@ -357,21 +355,6 @@ Para ejecutar esta consulta en el servidor simplemente deberemos acompañar las 
 Si representasemos la expresión anterior mediante el lenguaje ECQL tendríamos::
 
 	INTERSECTS(the_geom, LINESTRING(-125.68909683702887 50.174101053227751, -73.113095687349627 25.904513103468322, -73.113095687349627 25.904513103468322, -71.7512751210304629.50361031445469)) AND MALE > FEMALE
-	
-Uso de CQL
-----------
-
-Procesos y WPS
-==============
-
-[Oscar] ¿Scripting?
-
-
-SLD Avanzado
-============
-
-[Oscar] Mucha tela...
-
 
 
 Más allá de los estándares OGC
@@ -469,12 +452,6 @@ Extensiones
 [Micho] *Muy* breve listado y descripción de las extensiones más destacables, sean oficiales o community (ver gdoc). Con especial mención de formatos vía extensiones de BDD propietarias, ImageIO-ext
 
 
-Transformaciones de rejilla NTv2
-================================
-
-[Oscar] Simplemente indicar cómo usar la rejilla NTv2 del IGN para solucionar ED50 vs. ETRS89. 
-
-
 Conclusiones
 ============
 
@@ -489,69 +466,3 @@ Así, |GS| es un catálogo y repositorio de datos en línea, más un conjunto de
 Este artículo sólo muestra las características que hemos considerado más destacables, pero existen muchas otras que por falta de espacio no podemos mostrar, y que se encuentran descritas en el manual de usuario del proyecto [#]_.
 
 .. [#] http://docs.geoserver.org/stable/en/user/
-
-
-BORRAME: Directivas RST
-=======================
-
-Enlaces:
-
-* Un `enlace inline <http://geomati.co>`_,
-* Un `enlace externo`_.
-
-.. _`enlace externo`: http://geomati.co
-
-
-Notas a pie [#]_ autonuméricas [#]_.
-
-.. [#] Primera nota a pie.
-.. [#] Segunda nota a pie.
-
-
-Esto es una figura. Poner width a 400, y height proporcional. Formato de imagen en png (no acepta vectoriales):
-
-.. figure:: img/geomatico.png
-   :align: center
-   :width: 900
-   :height: 160
-
-   Pie de la figura: Logo de geomati.co.
-
-
-Esto es una tabla:
-
-.. table:: Descripción de la tabla 1.
-
-  ========================  ==========================================
-  Titulo 1                  Titulo 2
-  ========================  ==========================================
-  Fila 1                    Fila 1
-  Fila 2                    Fila 2
-  ========================  ==========================================
-
-
-Esto es una tabla descrita como una lista:
-
-.. list-table:: Descripción de la tabla 2.
-   :header-rows: 1
-   :widths: 15 22 15 15
-   
-   * - Titulo 1
-     - Titulo 2
-     - Titulo 3
-     - Titulo 4
-   * - Columna 1
-     - Columna 2
-     - Columna 3
-     - Columna 4
-
-Citar código::
-
-  $ java -version
-
-
-Sustituciones:
-
-Esto es un |tlqsr|.
-
-.. |tlqsr| replace:: texto largo que se repite

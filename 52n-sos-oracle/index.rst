@@ -149,7 +149,7 @@ The "master" git branch will be a mirror of the SVN one. DON'T commit any change
   git svn rebase         # update from svn
   git push origin master # share on github
 
-To keep up with SVN changes, first bring them to the "master" branch as expained, then propagate them to the "oracle" branch:
+To keep up with SVN changes, first bring them to the "master" branch as expained, then propagate them to the "oracle" branch::
 
   git checkout oracle    # a oracle hi ha les nostres coses
   git pull master        # incorporem els canvis dels mestres de 52n

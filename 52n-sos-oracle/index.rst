@@ -2,9 +2,6 @@
 Oracle Spatial driver for 52n SOS 4.0.0
 =======================================
 
-.. highlight:: bash
-   :linenothreshold: 10
-
 Installing Oracle 11g
 =====================
 
@@ -174,21 +171,17 @@ This will open the first-run installation wizard.
 
    **TODO:** Create Jetty starter to enable debugging within Eclipse.
 
-.. note::
-
-   Estudiar això arribat el cas: http://www.hibernatespatial.org/
-
 
 Oracle JDBC driver
 ==================
 
-**Work In Progress**
+**Work In Progress, need to find the best way to deal with these proprietary drivers**
 
 There are two drivers, "thin" and "OCI". The thin client is pure java, the OCI driver is platform-specific, but provides more functionality. The use of OCI driver is recommended, to avoid fetch size limitations on BLOB fields and increase performance.
 
 
 Using thin driver with maven
-............................
+----------------------------
 
 For licensing reasons, it has to be installed manually to the local Maven repo.
 
@@ -207,11 +200,11 @@ For licensing reasons, it has to be installed manually to the local Maven repo.
 
 .. warning::
 
-   This manual installation will be a nuisance for non-oracle-wise developers. It should be included as an optional maven profile to avoid interfering. And documented thoroughly, for those who are interested in Oracle development.
+   This manual installation will be a nuisance for non-oracle-wise developers. We whould avoid interfering with, or blocking, other developer's work that may not want to use Oracle at all.
 
 
 Installing thin driver in the system
-....................................
+------------------------------------
 
 As the jar file cannot be packaged and distributed with the war project, it'd rather be placed as a shared library in the system (accessible to all webapps). For instance, in a standard Ubuntu setup::
 
@@ -220,7 +213,7 @@ As the jar file cannot be packaged and distributed with the war project, it'd ra
 
 
 Using the OCI driver
-....................
+--------------------
 
 Download the Oracle Instant Client:
 
@@ -278,13 +271,16 @@ These scripts may contain PostgreSQL/PostGIS specific syntax (well, they do, act
 
 Once the initialisation wizard is working, the server is supposed to use Hibernate for its normal operation (TODO further analysis is needed to confirm there's no other hardcoded SQL around).
 
-To operate with PostGIS specificities, a custom dialect has been created (see ``hibernate-dialect`` module), which loads geospatial PostGIS data to JTS classes. Oracle Spatial will need its own dialect, analogous to the existing one. There are three classes: implementations for ``org.hibernate.spatial.SpatialDialect`` and ``org.hibernate.type.descriptor.sql.SqlTypeDescriptor`` interfaces, and an extension to ``org.hibernate.spatial.dialect.AbstractJTSGeometryValueExtractor``.
+To operate with PostGIS specificities, a custom dialect has been created, based on *hibernate spatial* (see ``hibernate-dialect`` module), which bridges geospatial PostGIS data with JTS classes. Oracle Spatial will need its own dialect, analogous to the existing one, providing implementations for ``org.hibernate.spatial.SpatialDialect`` and ``org.hibernate.type.descriptor.sql.SqlTypeDescriptor`` interfaces, and an extension to ``org.hibernate.spatial.dialect.AbstractJTSGeometryValueExtractor``.
+
 
 Coding style
-............
+------------
 
 The goal is to contribute the Oracle capabilities to the original 52n project. Take into account that a contributor agreement license is needed, as well as good coordination and approval from the 52n core developers. Use the 52n SOS mailing list.
 
 New code will be documented in Javadoc. JUnit testing with a reasonable coverage will be provided. Error handling should take special care on logging meaningful messages from Oracle's error causes.
 
-Note that any Oracle setup that cannot be automated by the SOS server should be clearly documented for future users and developers (v. gr. how to create a schema/user, how to grant permissions, or how to install the propietary JDBC/OCI drivers).
+Any Oracle setup that cannot be automated by the SOS server should be clearly documented for future users and developers (v. gr. how to create a schema/user, how to grant permissions, or how to install the propietary JDBC/OCI drivers).
+
+Note that this is a first quick analysis, and further code modifications could be needed. Consider sharing progresses in the SOS public mailing list and asking for beta testers out there.

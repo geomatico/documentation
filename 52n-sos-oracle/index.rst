@@ -149,6 +149,21 @@ The "master" git branch will be a mirror of the SVN one. DON'T commit any change
   git svn rebase         # update from svn
   git push origin master # share on github
 
+In this step you may find this error::
+
+  Unable to determine upstream SVN information from working tree history
+
+A solution that may work consists in, first, add this section to .git/config (taken from http://kearneyville.com/2009/07/09/speeding-up-git-svn-for-several-users/ and http://blog.tfnico.com/2010/08/syncing-your-git-repo-with-subversion.html)::
+
+  [svn-remote "svn"]
+  url = https://svn.52north.org/svn/swe/main/SOS/Service/branches/52n-sos-400-refactored
+  fetch = :refs/remotes/git-svn
+  
+Then, create the .git/refs/remotes/git-svn file with the SHA of the last commit. The SHA can be obtained with::
+
+  $ git log
+  ### Copy commit SHA 
+
 To keep up with SVN changes, first bring them to the "master" branch as expained, then propagate them to the "oracle" branch::
 
   git checkout oracle    # a oracle hi ha les nostres coses

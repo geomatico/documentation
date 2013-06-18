@@ -133,7 +133,7 @@ Source code is in 52n's SVN repo, Development branch is:
 
 To develop without interfering, we've created a *mirror* in Github, keeping all the history from SVN branch:
 
-  https://github.com/oscarfonts/52n-sos-4.0
+  https://github.com/geomatico/52n-sos-4.0
 
 The mirror has been created with *git-svn*, following these steps::
 

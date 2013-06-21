@@ -49,6 +49,8 @@ Notes
 
 * The sed script is database-dependent and it was updated on 21st June 2013.
 
+* All dates must be in the following format: YYYY-MM-DD HH24:MI:SS
+
 * This only works with geometries of type point in the *featureofinterest* table. If any other geometry type is present, or there are geometries in any other table, this won't work properly.
 
 * Geometries are **always** inserted in the *featureofinterest* table with EPSG:4326. This can always be updated in Oracle with::

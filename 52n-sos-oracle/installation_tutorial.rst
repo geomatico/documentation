@@ -20,8 +20,7 @@ Once the Oracle database is configured, we proceed to setup Tomcat. Download it 
    
 For this tutorial we used the 7.0.40 version.
 
-Then, copy your *52n-sos-webapp.war* file into *apache-tomcat-7.0.40/webapps* and execute *startup.bat* (Windows)
-or *startup.sh* (Linux), depending on your operating system.
+Then, copy your *52n-sos-webapp.war* file into *apache-tomcat-7.0.40/webapps* and start the Tomcat server.
 
 Now you have 52N SOS running in your Tomcat server. To access it, open this URL in your browser:
 
@@ -35,7 +34,22 @@ Click *there*, press Start and select Oracle Spatial from the drop-down list. A 
 appear below. Fill it with your database settings. For example, for the "sos" user created above, these will be the
 configuration values:
 
-* **User Name**: 
-* **User Name**: 
-* **User Name**: 
-* **User Name**: 
+* **User Name**: sos
+* **Password**: sos
+* **Database**: sos
+* **Host**: localhost
+* **Database port**: 1521
+* **Schema**: sos
+* **Transactional profile**: *Checked*
+* **Create tables**: *Checked*
+* **Delete existing tables**: *Checked*
+* **Create test data**: *Checked*
+
+Click Next and fill the Settings. For testing purposes it is possible to simply skip this process by clicking Next again.
+
+Finally, set a user name and a password for the 52N SOS administrator and click Install.
+
+**IMPORTANT**: It is possible to insert test data in the database (by using the *Create test data* checkbox in the 
+installation), but once it is created, it won't be possible to remove it using the 52N SOS webapp. Trying to do so from
+the *Admin -> Datasource maintenance* menu will result in an internal server error. It is always possible to remove it 
+using your preferred SQL client.

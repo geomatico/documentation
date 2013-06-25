@@ -20,7 +20,12 @@ Once the Oracle database is configured, we proceed to setup Tomcat. Download it 
    
 For this tutorial we used the 7.0.40 version.
 
-Then, copy your *52n-sos-webapp.war* file into *apache-tomcat-7.0.40/webapps* and start the Tomcat server.
+First, you need to create a file named *org.hibernate.spatial.dialect.oracle.OracleSpatial10gDialect.properties*
+in *apache-tomcat-7.0.40/lib* with the following contents::
+
+    CONNECTION-FINDER = org.n52.sos.ds.datasource.OracleC3P0ConnectionFinder
+    
+Then, copy your *52n-sos-webapp.war* file into *apache-tomcat-7.0.40/webapps* and start the Tomcat server. 
 
 Now you have 52N SOS running in your Tomcat server. To access it, open this URL in your browser:
 
